@@ -4,23 +4,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
+import org.springframework.web.bind.annotation.PathVariable;
+import ru.kata.spring.boot_security.demo.services.UserService;
 
 
 @Controller
 public class UserController {
-   private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
 
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/user")
-    public String getUserInfo (Model model) {
-        model.addAttribute("user", userServiceImpl
-                .loadUserByUsername(userServiceImpl.getCurrentUsername()));
+    public String getUserInfo(Model model) {
+        model.addAttribute("user", userService
+                .loadUserByUsername(userService.getCurrentUsername()));
+        return "user";
+    }
+    @GetMapping("/user/{username}")
+    public String getUser(@PathVariable String username, Model model) {
+        model.addAttribute("user", userService.loadUserByUsername(username));
         return "user";
     }
 }

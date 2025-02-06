@@ -9,6 +9,8 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,55 +18,58 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserService userService; // Внедряем интерфейс
-    private final RoleService roleService; // Внедряем интерфейс
+    public final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
     public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleService = roleService; // Внедрение зависимости через интерфейс
+        this.roleService = roleService;
     }
 
     @GetMapping
-    public String getAllUsers(Model model) {
+    public String getAllUsers(Model model, Principal principal) {
+        User admin = userService.findByUsername(principal.getName());
+        model.addAttribute("admin", admin);
         model.addAttribute("allUsers", userService.listUser ());
+        model.addAttribute("roles", roleService.getRoleList());
         return "admin";
     }
 
-    @GetMapping("delete/{id}")
-    public String deleteUser (@PathVariable("id") int id) {
-        userService.removeUser (id);
+
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") int id) {
+        userService.removeUser(id);
         return "redirect:/admin";
     }
+//
+//    @GetMapping("update/{id}")
+//    public String updateUserForm(@PathVariable("id") int id, Model model) {
+//        model.addAttribute("user", userService.getUserById(id));
+//        model.addAttribute("allRoles", roleService.getRoleList());
+//        return "update";
+//    }
 
-    @GetMapping("update/{id}")
-    public String updateUserForm(@PathVariable("id") int id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("allRoles", roleService.getRoleList());
-        return "update";
-    }
-
-    @PostMapping("/update")
-    public String updateUser (@ModelAttribute("user") User user, @RequestParam("roleList") List<String> role) {
-        user.setRoles(userService.getSetOfRoles(role));
-        userService.updateUser (user);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("add")
-    public String registration(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("allRoles", roleService.getRoleList());
-        return "add";
-    }
-
-    @PostMapping("/add")
-    public String addUser (@ModelAttribute("user") User user, @RequestParam(value = "role", required = false) List<String> role) {
-        if (role != null && !role.isEmpty()) {
-            Collection<Role> roleList = userService.getSetOfRoles(role);
-            user.setRoles(roleList);
+    @PostMapping("/update/{id}")
+    public String update
+            (@ModelAttribute("user") User user, @PathVariable("id") int id, @RequestParam(name = "roles", required = false) String[] roles) {
+        List<Role> roles1 = new ArrayList<>();
+        if (roles == null) {
+            user.setRoles((List<Role>) userService.getUserById(id).getRoles());
+        } else {
+            for (String role : roles) {
+                roles1.add(roleService.getRoleById(id));
+                user.setRoles(roles1);
+            }
         }
-        userService.addUser (user);
+        userService.updateUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/registration")
+    public String addUser(@ModelAttribute("user") User user, @RequestParam("roles") List<String> role) {
+        user.setRoles(userService.getSetOfRoles(role));
+        userService.updateUser(user);
         return "redirect:/admin";
     }
 }
