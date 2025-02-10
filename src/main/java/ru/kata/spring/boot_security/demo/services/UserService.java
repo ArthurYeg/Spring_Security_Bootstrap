@@ -11,19 +11,26 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
     List<User> listUser ();
+
     void addUser (User user);
+
     void updateUser (User user);
-    User getUserById(int id);
-    void removeUser (int id);
+
+    User getUserById(long id);
+
+    void removeUser (long id);
+
     Collection<Role> getSetOfRoles(List<String> role);
+
     String getCurrentUsername();
+
     User findByUsername(String name);
 
     @Override
-    default UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
+    void save(User user);
 
+    boolean usernameExists(String username);
 }
 

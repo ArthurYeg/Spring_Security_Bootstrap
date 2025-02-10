@@ -17,28 +17,25 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData(UserServiceImpl userServiceImpl, RoleRepository roleRepository) {
         return args -> {
-            Role userRole = new Role();
-            userRole.setName("ROLE_USER");
+            Role userRole = new Role("ROLE_USER");
             roleRepository.save(userRole);
 
-            Role adminRole = new Role();
-            adminRole.setName("ROLE_ADMIN");
+            Role adminRole = new Role("ROLE_ADMIN");
             roleRepository.save(adminRole);
 
             User user = new User();
             user.setUsername("user");
             user.setPassword("123");
-            user.setAge(23);
+            user.setAge(23L);
             user.setRoles(List.of(userRole));
-            userServiceImpl.addUser(user);
+            userServiceImpl.addUser (user);
 
             User admin = new User();
             admin.setUsername("admin");
             admin.setPassword("123");
-            admin.setAge(23);
+            admin.setAge(23L);
             admin.setRoles(List.of(adminRole, userRole));
-            userServiceImpl.addUser(admin);
+            userServiceImpl.addUser (admin);
         };
     }
 }
-
