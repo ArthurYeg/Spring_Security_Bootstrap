@@ -23,7 +23,7 @@ public class UserController {
         this.passwordEncoder = passwordEncoder; // Инициализация
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registration")
     public ResponseEntity<?> registerUser (@RequestBody User user) {
         if (userService.findByUsername(user.getUsername()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");

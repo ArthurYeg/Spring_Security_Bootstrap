@@ -13,7 +13,8 @@ import ru.kata.spring.boot_security.demo.validator.UniqueUsername;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name="user", uniqueConstraints=
+@UniqueConstraint(columnNames={"username"}) )
 public class User implements UserDetails {
 
     @Id
@@ -24,7 +25,7 @@ public class User implements UserDetails {
     private String password;
 
 
-    @UniqueUsername
+
     @Column(unique = true)
     @NotEmpty(message = "Name should not be empty")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Name should contain only letters")

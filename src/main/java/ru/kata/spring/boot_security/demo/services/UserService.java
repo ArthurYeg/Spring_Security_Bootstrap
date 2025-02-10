@@ -32,5 +32,7 @@ public interface UserService extends UserDetailsService {
     void save(User user);
 
     boolean usernameExists(String username);
+
+    User findById(Long id);
 }
 

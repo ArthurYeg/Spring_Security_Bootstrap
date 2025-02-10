@@ -94,4 +94,9 @@ public class UserServiceImpl implements UserService {
     public boolean usernameExists(String username) {
         return false;
     }
+
+    @Override
+    public User findById(Long id) {
+        return null;
+    }
 }
