@@ -1,9 +1,6 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +9,10 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
-
-import javax.validation.ValidationException;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -35,66 +32,45 @@ public class AdminController {
     public String getAllUsers(Model model, Principal principal) {
         User admin = userService.findByUsername(principal.getName());
         model.addAttribute("admin", admin);
-        model.addAttribute("allUsers", userService.listUser());
+        model.addAttribute("allUsers", userService.listUser ());
         model.addAttribute("roles", roleService.getRoleList());
         return "admin";
     }
 
+
     @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
+    public String deleteUser(@PathVariable("id") int id) {
         userService.removeUser(id);
         return "redirect:/admin";
     }
-    @GetMapping("/update/{id}")
-    public String getUpdateForm(@PathVariable Long id, Model model) {
-        User user = userService.findById(id);
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roleService.getRoleList());
-        return "updateForm"; // Название шаблона для формы обновления
-    }
-    @PostMapping("/update/{id}")
-    public ResponseEntity<String> update(@ModelAttribute("user") User user,
-                         @PathVariable("id") long id,
-                         @RequestParam(name = "roles", required = false) List<Long> roles) {
-        List<Role> rolesList = new ArrayList<>();
-        if (roles != null) {
-            for (Long roleId : roles) {
-                Role role = roleService.getRoleById(roleId);
-                if (role != null) {
-                    rolesList.add(role);
-                }
-            }
-        } else {
+//
+//    @GetMapping("update/{id}")
+//    public String updateUserForm(@PathVariable("id") int id, Model model) {
+//        model.addAttribute("user", userService.getUserById(id));
+//        model.addAttribute("allRoles", roleService.getRoleList());
+//        return "update";
+//    }
 
-            rolesList = new ArrayList<>(userService.getUserById(id).getRoles());
+    @PostMapping("/update/{id}")
+    public String update
+            (@ModelAttribute("user") @Valid User user, @PathVariable("id") int id, @RequestParam(name = "roles", required = false) String[] roles) {
+        List<Role> roles1 = new ArrayList<>();
+        if (roles == null) {
+            user.setRoles((List<Role>) userService.getUserById(id).getRoles());
+        } else {
+            for (String role : roles) {
+                roles1.add(roleService.getRoleById(id));
+                user.setRoles(roles1);
+            }
         }
-        user.setRoles(rolesList);
-        try {
-            userService.updateUser(user);
-        } catch (ValidationException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-             return (ResponseEntity<String>) ResponseEntity.status(HttpStatus.OK);
+        userService.updateUser(user);
+        return "redirect:/admin";
     }
 
     @PostMapping("/registration")
-    public String addUser(@ModelAttribute("user") User user,
-                          @RequestParam("roles") List<Long> roleIds,
-                          Model model) {
-
-        if (userService.usernameExists(user.getUsername())) {
-            model.addAttribute("errorMessage", "A user with this name already exists.");
-            model.addAttribute("roles", roleService.getRoleList());
-            return "registration";
-        }
-
-        try {
-            userService.addUser(user);
-        } catch (DataIntegrityViolationException e) {
-            model.addAttribute("errorMessage", "There was an error adding the user.");
-            return "registration";
-        }
-
+    public String addUser(@ModelAttribute("user") User user, @RequestParam("roles") List<String> role) {
+        user.setRoles(userService.getSetOfRoles(role));
+        userService.updateUser(user);
         return "redirect:/admin";
     }
 }

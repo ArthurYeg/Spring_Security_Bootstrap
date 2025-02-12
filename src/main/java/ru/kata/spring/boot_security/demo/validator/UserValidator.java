@@ -1,12 +1,16 @@
 package ru.kata.spring.boot_security.demo.validator;
-
-import ru.kata.spring.boot_security.demo.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 @Component
 public class UserValidator implements Validator {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -15,11 +19,10 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        User user = (User ) target;
+        User user = (User) target;
 
-        if (user.getUsername() == null || user.getUsername().isEmpty()) {
-            errors.rejectValue("username", "error.username", "Username is required");
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            errors.rejectValue("username", "error.username", "Имя пользователя уже существует");
         }
-
     }
 }

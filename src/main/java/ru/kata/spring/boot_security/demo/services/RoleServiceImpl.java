@@ -23,13 +23,13 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> getSetOfRoles(List<String> rolesId) {
         List<Role> roles = new ArrayList<>();
         for (String id : rolesId) {
-            roles.add(getRoleById(Long.parseLong(id)));
+            roles.add(getRoleById(Integer.parseInt(id)));
         }
         return roles;
     }
 
     @Override
-    public Role getRoleById(long id) {
+    public Role getRoleById(int id) {
         return roleRepository.findById(id).orElse(null);
     }
 
