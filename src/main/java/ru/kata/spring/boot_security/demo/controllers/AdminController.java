@@ -12,14 +12,15 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    public final UserService userService;
+    private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
@@ -32,44 +33,42 @@ public class AdminController {
     public String getAllUsers(Model model, Principal principal) {
         User admin = userService.findByUsername(principal.getName());
         model.addAttribute("admin", admin);
-        model.addAttribute("allUsers", userService.listUser ());
+        model.addAttribute("allUsers", userService.listUser());
         model.addAttribute("roles", roleService.getRoleList());
         return "admin";
     }
-
 
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
         userService.removeUser(id);
         return "redirect:/admin";
     }
-//
-//    @GetMapping("update/{id}")
-//    public String updateUserForm(@PathVariable("id") int id, Model model) {
-//        model.addAttribute("user", userService.getUserById(id));
-//        model.addAttribute("allRoles", roleService.getRoleList());
-//        return "update";
-//    }
 
     @PostMapping("/update/{id}")
-    public String update
-            (@ModelAttribute("user") @Valid User user, @PathVariable("id") int id, @RequestParam(name = "roles", required = false) String[] roles) {
-        List<Role> roles1 = new ArrayList<>();
-        if (roles == null) {
-            user.setRoles((List<Role>) userService.getUserById(id).getRoles());
-        } else {
-            for (String role : roles) {
-                roles1.add(roleService.getRoleById(id));
-                user.setRoles(roles1);
-            }
-        }
-        userService.updateUser(user);
+    public String updateUser(
+            @Valid @ModelAttribute("user") User user,
+            @PathVariable("id") int id,
+            @RequestParam(name = "roles", required = false) String[] roles
+    ) {
+//        Set<Role> roleSet = new HashSet<>();
+//        if (roles == null) {
+//            user.setRoles((Set<Role>) userService.getUserById(id).getRoles());
+//        } else {
+//            for (String role : roles) {
+//                roleList.add(roleService.getRoleById(Integer.parseInt(role)));
+//            }
+//            user.setRoles(roleList);
+//        }
+//        userService.updateUser(user);
         return "redirect:/admin";
     }
 
     @PostMapping("/registration")
-    public String addUser(@ModelAttribute("user") User user, @RequestParam("roles") List<String> role) {
-        user.setRoles(userService.getSetOfRoles(role));
+    public String addUser(
+            @Valid @ModelAttribute("user") User user,
+            @RequestParam("roles") Set<String> roles
+    ) {
+        user.setRoles(userService.getSetOfRoles(roles));
         userService.updateUser(user);
         return "redirect:/admin";
     }

@@ -1,4 +1,5 @@
 package ru.kata.spring.boot_security.demo.validator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,8 +10,12 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 @Component
 public class UserValidator implements Validator {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -22,7 +27,7 @@ public class UserValidator implements Validator {
         User user = (User) target;
 
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            errors.rejectValue("username", "error.username", "Имя пользователя уже существует");
+            errors.rejectValue("username", "error.username", "Username already exists");
         }
     }
 }

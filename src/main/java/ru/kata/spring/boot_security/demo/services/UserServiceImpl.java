@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,18 +19,17 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private  final RoleService roleService;
+    private final RoleService roleService;
 
 
     @Autowired
@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.roleService = roleService;
 
     }
+
     public User loadUserWithRoles(String username) {
         User user = userRepository.findByUsername(username);
         if (user != null) {
@@ -46,15 +47,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         return user;
     }
+
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User  not found with username: " + username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new UsernameNotFoundException("User  not found with username: " + email);
         }
-        user.getRoles().size();
-        return user;
     }
 
     @Override
@@ -63,9 +65,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 
     @EntityGraph(attributePaths = {"roles"})
@@ -73,8 +73,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public List<Role> getSetOfRoles(List<String> rolesId) {
-        List<Role> roleSet = new ArrayList<>();
+    public Set<Role> getSetOfRoles(Set<String> rolesId) {
+        Set<Role> roleSet = new HashSet<>();
         for (String id : rolesId) {
             roleSet.add(roleService.getRoleById(Integer.parseInt(id)));
         }
@@ -87,24 +87,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> listUser () {
+    public List<User> listUser() {
         return userRepository.findAll();
     }
 
     @Override
-    public void addUser (User user) {
+    public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
     @Override
-    public void updateUser (User user) {
+    public void updateUser(User user) {
         if (!user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
-            User existingUser  = userRepository.findById(user.getId()).orElse(null);
-            if (existingUser  != null) {
-                user.setPassword(existingUser .getPassword());
+            User existingUser = userRepository.findById(user.getId()).orElse(null);
+            if (existingUser != null) {
+                user.setPassword(existingUser.getPassword());
             }
         }
         userRepository.saveAndFlush(user);
@@ -116,7 +116,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void removeUser (int id) {
+    public void removeUser(int id) {
         userRepository.deleteById(id);
+
     }
 }
