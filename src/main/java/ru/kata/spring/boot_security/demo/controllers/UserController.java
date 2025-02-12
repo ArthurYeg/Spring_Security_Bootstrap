@@ -62,10 +62,10 @@ public class UserController {
         userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "user/edit"; // Вернуть обратно с ошибками
+            return "user/edit";
         }
 
-        userService.save(user); // Сохранить изменения
-        return "redirect:/users"; // Перенаправить
+        userService.save(user);
+        return "redirect:/users";
     }
 }
