@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Collection;
+
 import java.util.Set;
 
 @Entity
@@ -22,6 +22,30 @@ public class Role implements GrantedAuthority {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @ManyToMany(mappedBy = "roles")
     @JsonBackReference
@@ -43,4 +67,6 @@ public class Role implements GrantedAuthority {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+
 }

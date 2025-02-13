@@ -48,8 +48,22 @@ public class AdminController {
     public String updateUser(
             @Valid @ModelAttribute("user") User user,
             @PathVariable("id") int id,
-            @RequestParam(name = "roles", required = false) String[] roles
-    ) {
+            @RequestParam(name = "roles", required = false) String[] roles) {
+        User existingUser  = userService.getUserById(id);
+        if (existingUser  == null) {
+            return "redirect:/admin";
+        }
+        existingUser .setUsername(user.getUsername());
+        existingUser .setPassword(user.getPassword());
+        existingUser .setEmail(user.getEmail());
+        Set<Role> roleSet = new HashSet<>();
+        if (roles != null) {
+            for (String role : roles) {
+                roleSet.add(roleService.getRoleById(Integer.parseInt(role)));
+            }
+        }
+        existingUser .setRoles(roleSet);
+        userService.updateUser (existingUser );
 //        Set<Role> roleSet = new HashSet<>();
 //        if (roles == null) {
 //            user.setRoles((Set<Role>) userService.getUserById(id).getRoles());

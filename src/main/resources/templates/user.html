@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -69,6 +69,7 @@
         <th>Username</th>
         <th>Age</th>
         <th>Password</th>
+        <th>Email</th>
         <th>Role</th>
       </tr>
       </thead>
@@ -78,6 +79,7 @@
         <td th:text="${user.username}"></td>
         <td th:text="${user.age}"></td>
         <td th:text="${user.password}"></td>
+        <td th:text="${user.email}"></td>
         <td>
           <table>
             <tr th:each="role : ${user.roles}">

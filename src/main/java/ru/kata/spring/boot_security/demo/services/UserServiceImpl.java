@@ -59,16 +59,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public void save(User user) {
-
-    }
-
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-    }
+//    @Override
+//    public void save(User user) {
+//
+//    }
+//
+//    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+//        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//    }
 
     @EntityGraph(attributePaths = {"roles"})
+    @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -89,6 +90,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> listUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public void save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
     @Override

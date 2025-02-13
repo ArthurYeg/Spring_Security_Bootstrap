@@ -125,13 +125,13 @@ public class User implements UserDetails {
     }
 
 
-
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
                 ", roles=" + roles +
                 '}';
     }
@@ -148,10 +148,6 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(id, username);
-    }
-
-    public String getName() {
-        return username;
     }
 
     public boolean isPresent() {
