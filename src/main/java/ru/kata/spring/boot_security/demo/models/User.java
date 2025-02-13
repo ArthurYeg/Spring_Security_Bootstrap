@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.kata.spring.boot_security.demo.util.UniqueUsername;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -31,6 +32,7 @@ public class User implements UserDetails {
     private String password;
 
     @NotNull(message = "Username cannot be null")
+    @UniqueUsername(message = "Username already exists")
     private String username;
 
     @Email(message = "Enter the correct email")

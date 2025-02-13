@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
@@ -49,21 +50,21 @@ public class AdminController {
             @Valid @ModelAttribute("user") User user,
             @PathVariable("id") int id,
             @RequestParam(name = "roles", required = false) String[] roles) {
-        User existingUser  = userService.getUserById(id);
-        if (existingUser  == null) {
+        User existingUser = userService.getUserById(id);
+        if (existingUser == null) {
             return "redirect:/admin";
         }
-        existingUser .setUsername(user.getUsername());
-        existingUser .setPassword(user.getPassword());
-        existingUser .setEmail(user.getEmail());
+        existingUser.setUsername(user.getUsername());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setEmail(user.getEmail());
         Set<Role> roleSet = new HashSet<>();
         if (roles != null) {
             for (String role : roles) {
                 roleSet.add(roleService.getRoleById(Integer.parseInt(role)));
             }
         }
-        existingUser .setRoles(roleSet);
-        userService.updateUser (existingUser );
+        existingUser.setRoles(roleSet);
+        userService.updateUser(existingUser);
 //        Set<Role> roleSet = new HashSet<>();
 //        if (roles == null) {
 //            user.setRoles((Set<Role>) userService.getUserById(id).getRoles());
@@ -85,5 +86,6 @@ public class AdminController {
         user.setRoles(userService.getSetOfRoles(roles));
         userService.updateUser(user);
         return "redirect:/admin";
-    }
+
+}
 }
