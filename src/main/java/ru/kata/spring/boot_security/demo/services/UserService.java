@@ -1,38 +1,34 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 public interface UserService extends UserDetailsService {
-    List<User> listUser();
+    User findByUsername(String username);
 
-    void addUser(User user);
+    List<User> getAllUsers();
 
-    void updateUser(User user);
+    boolean createUser(@ModelAttribute User user);
 
-    User getUserById(int id);
+    User getEditUserPage(@PathVariable Long id);
 
-    void removeUser(int id);
+    boolean editUser(@ModelAttribute("user") User user);
 
-    Set<Role> getSetOfRoles(Set<String> role);
+    boolean deleteUser(@PathVariable Long id);
 
-    String getCurrentUsername();
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    User findByUsername(String name);
-
-    @Override
-    default UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
-
-    void saveUser(User user);
-
+    Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
 }

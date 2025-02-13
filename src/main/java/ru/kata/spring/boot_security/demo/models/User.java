@@ -7,75 +7,87 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.kata.spring.boot_security.demo.util.UniqueUsername;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "unique_username", columnNames = "username"))
+@Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Min(value = 0, message = "Age should be greater than 0")
-    private Integer age;
+    private byte age;
 
-    @NotNull(message = "Password cannot be null")
-    private String password;
 
-    @NotNull(message = "Username cannot be null")
-    @UniqueUsername(message = "Username already exists")
+    @Column(name = "username")
     private String username;
 
-    @Email(message = "Enter the correct email")
+    @Column(unique = true)
     private String email;
 
+    private String password;
+    @Transient
+    private String passwordConfirm;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "users_id"),
-            inverseJoinColumns = @JoinColumn(name = "roles_id")
-    )
-    @JsonManagedReference
+            inverseJoinColumns = @JoinColumn(name = "roles_id"))
+
     private Set<Role> roles;
 
-    public Integer getId() {
+    public User() {
+
+    }
+
+    public User(String username, String password, byte age, String email) {
+        this.username = username;
+        this.password = password;
+        this.age = age;
+        this.email = email;
+    }
+
+    public User(byte age,
+                String username,
+                String password,
+                String email) {
+        this.age = age;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+
+
+    }
+
+    public User(String admin, String adminName, byte b, String s, String mail) {
+        this.username = admin;
+        this.password = s;
+        this.email = mail;
+        this.age = b;
+        this.roles = new HashSet<>();
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
     public String getUsername() {
         return username;
     }
@@ -84,6 +96,21 @@ public class User implements UserDetails {
         this.username = username;
     }
 
+    public byte getAge() {
+        return age;
+    }
+
+    public void setAge(byte age) {
+        this.age = age;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getEmail() {
         return email;
@@ -101,9 +128,25 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public String getAllUserRoles() {
+        return roles.stream()
+                .map(role -> {
+                    if (role.getRoleName().equals("ROLE_USER")) {
+                        return "USER";
+                    } else if (role.getRoleName().equals("ROLE_ADMIN")) {
+                        return "ADMIN";
+                    } else {
+                        return role.getRoleName();
+                    }
+                })
+                .collect(Collectors.joining(", "));
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        return roles.stream()
+                .map(role -> (GrantedAuthority) () -> role.getRoleName())
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -126,6 +169,18 @@ public class User implements UserDetails {
         return true;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        User user = (User) object;
+        return id == user.id && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username);
+    }
 
     @Override
     public String toString() {
@@ -136,20 +191,6 @@ public class User implements UserDetails {
                 ", email='" + email + '\'' +
                 ", roles=" + roles +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(username, user.username);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username);
     }
 
     public boolean isPresent() {

@@ -1,130 +1,108 @@
 package ru.kata.spring.boot_security.demo.services;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
-
-    @Autowired
     private UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RoleService roleService;
-
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService) {
+    @Lazy
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.roleService = roleService;
 
     }
 
-    public User loadUserWithRoles(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            user.getRoles().size();
+    public User findByUsername(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users;
+    }
+
+    @Override
+    public boolean createUser(@ModelAttribute User user) {
+        if (userRepository.findByUsername(user.getEmail()) == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    @Override
+    public User getEditUserPage(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
         return user;
     }
 
     @Override
     @Transactional
+    public boolean editUser(@ModelAttribute("user") User user) {
+        return userRepository.findById(user.getId())
+                .map(editUser -> {
+                    editUser.setEmail(user.getEmail());
+                    editUser.setUsername(user.getUsername());
+                    editUser.setAge(user.getAge());
+                    if (user.getPassword() != null && !user.getPassword().isEmpty()){
+                        editUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                    }
+                    editUser.setRoles(user.getRoles());
+                    userRepository.save(editUser);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    @Override
+    public boolean deleteUser(Long id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setRoles(null);
+                    userRepository.delete(user);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new UsernameNotFoundException("User  not found with username: " + email);
+        User user = findByUsername(email);
+        if (user == null) {
+            throw new UsernameNotFoundException(email);
         }
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), getAuthorities(user.getRoles()));
     }
 
-//    @Override
-//    public void save(User user) {
-//
-//    }
-//
-//    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-//        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-//    }
-
-    @EntityGraph(attributePaths = {"roles"})
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    public Set<Role> getSetOfRoles(Set<String> rolesId) {
-        Set<Role> roleSet = new HashSet<>();
-        for (String id : rolesId) {
-            roleSet.add(roleService.getRoleById(Integer.parseInt(id)));
-        }
-        return roleSet;
-    }
-
-    public String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
-    }
-
-    @Override
-    public List<User> listUser() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
-    @Override
-    public void addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
-    @Override
-    public void updateUser(User user) {
-        if (!user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else {
-            User existingUser = userRepository.findById(user.getId()).orElse(null);
-            if (existingUser != null) {
-                user.setPassword(existingUser.getPassword());
-            }
-        }
-        userRepository.saveAndFlush(user);
-    }
-
-    @Override
-    public User getUserById(int id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public void removeUser(int id) {
-        userRepository.deleteById(id);
-
+    public Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRoleName())).collect(Collectors.toList());
     }
 }

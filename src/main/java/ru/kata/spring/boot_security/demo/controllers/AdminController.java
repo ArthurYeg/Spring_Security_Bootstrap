@@ -31,61 +31,33 @@ public class AdminController {
     }
 
     @GetMapping
-    public String getAllUsers(Model model, Principal principal) {
-        User admin = userService.findByUsername(principal.getName());
-        model.addAttribute("admin", admin);
-        model.addAttribute("allUsers", userService.listUser());
-        model.addAttribute("roles", roleService.getRoleList());
+    public String usersListPage(Model model, Principal principal) {
+        model.addAttribute("user", userService.findByUsername(principal.getName()));
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("allRoles", roleService.getRoleList());
+        model.addAttribute("newUser", new User());
         return "admin";
     }
-
-    @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
-        userService.removeUser(id);
-        return "redirect:/admin";
-    }
-
-    @PostMapping("/update/{id}")
-    public String updateUser(
-            @Valid @ModelAttribute("user") User user,
-            @PathVariable("id") int id,
-            @RequestParam(name = "roles", required = false) String[] roles) {
-        User existingUser = userService.getUserById(id);
-        if (existingUser == null) {
+    @PostMapping()
+    public String createUser(@ModelAttribute User user) {
+        if (userService.createUser(user) == true) {
+            return "redirect:/admin";
+        } else {
             return "redirect:/admin";
         }
-        existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setEmail(user.getEmail());
-        Set<Role> roleSet = new HashSet<>();
-        if (roles != null) {
-            for (String role : roles) {
-                roleSet.add(roleService.getRoleById(Integer.parseInt(role)));
-            }
-        }
-        existingUser.setRoles(roleSet);
-        userService.updateUser(existingUser);
-//        Set<Role> roleSet = new HashSet<>();
-//        if (roles == null) {
-//            user.setRoles((Set<Role>) userService.getUserById(id).getRoles());
-//        } else {
-//            for (String role : roles) {
-//                roleList.add(roleService.getRoleById(Integer.parseInt(role)));
-//            }
-//            user.setRoles(roleList);
-//        }
-//        userService.updateUser(user);
+
+    }
+
+    @PutMapping("admin/{id}")
+    public String editUser(@ModelAttribute("user") User user) {
+        userService.editUser(user);
         return "redirect:/admin";
     }
 
-    @PostMapping("/registration")
-    public String addUser(
-            @Valid @ModelAttribute("user") User user,
-            @RequestParam("roles") Set<String> roles
-    ) {
-        user.setRoles(userService.getSetOfRoles(roles));
-        userService.updateUser(user);
-        return "redirect:/admin";
 
-}
+    @DeleteMapping("admin/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return "redirect:/admin";
+    }
 }
