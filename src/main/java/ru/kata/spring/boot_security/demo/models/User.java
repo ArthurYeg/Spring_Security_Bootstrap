@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jdk.jfr.Unsigned;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
@@ -25,6 +26,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "age")
     private byte age;
 
 
@@ -35,9 +37,9 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+
     @Transient
     private String passwordConfirm;
-
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -187,9 +189,9 @@ public class User implements UserDetails {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", roles=" + roles +
+                ", password='" + password + '\'' +
+//                ", roles=" + roles +
                 '}';
     }
 

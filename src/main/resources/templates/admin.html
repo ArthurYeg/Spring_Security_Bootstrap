@@ -121,8 +121,7 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">ID</th>
-                                    <th scope="col">First name</th>
-                                    <th scope="col">Last name</th>
+                                    <th scope="col">Username</th>
                                     <th scope="col">age</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Role</th>
@@ -138,7 +137,8 @@
                                     <td th:text="${user.email}"></td>
                                     <td th:text="${user.getAllUserRoles()}"></td>
                                     <td>
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userEdit"
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#userEdit"
                                                 th:data-bs-id="${user.id}"
                                                 th:data-bs-username="${user.username}"
                                                 th:data-bs-age="${user.age}"
@@ -148,7 +148,8 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#userDelete"
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#userDelete"
                                                 th:data-bs-id="${user.id}"
                                                 th:data-bs-username="${user.username}"
                                                 th:data-bs-age="${user.age}"
@@ -181,19 +182,24 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="age" class="form-label fw-bold">Age</label>
-                                    <input type="text" th:field="*{age}" class="form-control" id="age" placeholder="Age" required>
+                                    <input type="text" th:field="*{age}" class="form-control" id="age" placeholder="Age"
+                                           required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="email" class="form-label fw-bold">Email</label>
-                                    <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Email" required>
+                                    <input type="email" th:field="*{email}" class="form-control" id="email"
+                                           placeholder="Email" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-bold">Password</label>
-                                    <input type="text" th:field="*{password}" class="form-control" id="password" placeholder="Password" required>
+                                    <input type="text" th:field="*{password}" class="form-control" id="password"
+                                           placeholder="Password" required>
                                 </div>
                                 <label for="roles" class="fw-bold">Role</label>
-                                <select class="form-select" id="roles" name="roles" multiple th:size="${#sets.size(allRoles)}" required>
-                                    <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                                <select class="form-select" id="roles" name="roles" multiple
+                                        th:size="${#sets.size(allRoles)}" required>
+                                    <option th:each="role: ${allRoles}" th:value="${role.id}"
+                                            th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                                 </select>
 
                                 <input class="btn btn-success" type="submit" value="Add new user"
@@ -222,8 +228,7 @@
                         <thead>
                         <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
+                            <th scope="col">Username</th>
                             <th scope="col">Age</th>
                             <th scope="col">Email</th>
                             <th scope="col">Role</th>
@@ -267,8 +272,10 @@
                         <label class="form-label mt-3 mb-0" for="editPassword"><strong>Password</strong></label>
                         <input class="form-control" id="editPassword" type="password" name="password">
                         <label class="form-label mt-3 mb-0" for="editRoles"><strong>Role</strong></label>
-                        <select class="form-select" id="editRoles" name="roles" multiple th:size="${#sets.size(allRoles)}" required>
-                            <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                        <select class="form-select" id="editRoles" name="roles" multiple
+                                th:size="${#sets.size(allRoles)}" required>
+                            <option th:each="role: ${allRoles}" th:value="${role.id}"
+                                    th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                         </select>
                     </form>
                 </div>
@@ -304,8 +311,10 @@
                         <label class="form-label mt-3 mb-0" for="deleteEmail"><strong>Email</strong></label>
                         <input class="form-control" id="deleteEmail" type="email" name="email" disabled>
                         <label class="form-label mt-3 mb-0" for="deleteRoles"><strong>Role</strong></label>
-                        <select class="form-select" id="deleteRoles" name="roles" multiple th:size="${#sets.size(allRoles)}" disabled>
-                            <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                        <select class="form-select" id="deleteRoles" name="roles" multiple
+                                th:size="${#sets.size(allRoles)}" disabled>
+                            <option th:each="role: ${allRoles}" th:value="${role.id}"
+                                    th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                         </select>
                     </form>
                 </div>
