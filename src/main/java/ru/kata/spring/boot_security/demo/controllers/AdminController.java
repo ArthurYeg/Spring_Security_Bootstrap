@@ -40,7 +40,7 @@ public class AdminController {
     }
 
     @PostMapping()
-    public String createUser(@Valid @ModelAttribute ("newUser") User user, BindingResult bindingResult, Model model) {
+    public String createUser(@Valid @ModelAttribute("newUser") User user, BindingResult bindingResult, Model model) {
         if (userService.emailExists(user.getEmail())) {
             bindingResult.rejectValue("email", "error.user", "Email already exists");
         }
@@ -55,11 +55,19 @@ public class AdminController {
     }
 
     @PutMapping("admin/{id}")
-    public String editUser(@ModelAttribute("user") User user) {
-        userService.editUser(user);
-        return "redirect:/admin";
-    }
+    public String editUser(@Valid @ModelAttribute("newUser") User user, BindingResult bindingResult, Model model) {
+        if (userService.emailExists(user.getEmail())) {
+            bindingResult.rejectValue("email", "error.user", "Email already exists");
+        }
 
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", roleService.getRoleList());
+            return "admin";
+        }
+        userService.createUser(user);
+        return "redirect:/admin";
+
+    }
 
     @DeleteMapping("admin/{id}")
     public String deleteUser(@PathVariable Long id) {
