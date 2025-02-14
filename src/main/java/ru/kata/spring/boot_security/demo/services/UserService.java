@@ -31,4 +31,6 @@ public interface UserService extends UserDetailsService {
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
     Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
+
+    boolean emailExists(String email);
 }

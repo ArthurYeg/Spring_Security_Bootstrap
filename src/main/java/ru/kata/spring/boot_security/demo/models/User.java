@@ -10,9 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,16 +24,17 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "age")
-    private byte age;
-
-
-    @Column(name = "username")
+    @NotEmpty(message = "Username cannot be empty")
+    @Size(min = 2, max = 30, message = "Username must be between 2 and 30 characters")
     private String username;
 
-    @Column(unique = true)
+    private byte age;
+
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Email must be valid")
     private String email;
 
+    @NotEmpty(message = "Password cannot be empty")
     private String password;
 
     @Transient

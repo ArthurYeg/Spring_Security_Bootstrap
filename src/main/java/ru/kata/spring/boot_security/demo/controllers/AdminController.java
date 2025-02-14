@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.Role;
@@ -32,19 +33,24 @@ public class AdminController {
 
     @GetMapping
     public String usersListPage(Model model, Principal principal) {
-        model.addAttribute("user", userService.findByUsername(principal.getName()));
+        model.addAttribute("newUser", new User());
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("allRoles", roleService.getRoleList());
-        model.addAttribute("newUser", new User());
         return "admin";
     }
+
     @PostMapping()
-    public String createUser(@ModelAttribute User user) {
-        if (userService.createUser(user) == true) {
-            return "redirect:/admin";
-        } else {
-            return "redirect:/admin";
+    public String createUser(@Valid @ModelAttribute ("newUser") User user, BindingResult bindingResult, Model model) {
+        if (userService.emailExists(user.getEmail())) {
+            bindingResult.rejectValue("email", "error.user", "Email already exists");
         }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", roleService.getRoleList());
+            return "admin";
+        }
+        userService.createUser(user);
+        return "redirect:/admin";
 
     }
 

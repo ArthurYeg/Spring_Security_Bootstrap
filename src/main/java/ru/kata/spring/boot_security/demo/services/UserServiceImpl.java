@@ -47,6 +47,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
+    public boolean emailExists(String email) {
+        return userRepository.findByEmail(email) != null;
+    }
+
+    @Override
     public boolean createUser(@ModelAttribute User user) {
         if (userRepository.findByUsername(user.getEmail()) == null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));

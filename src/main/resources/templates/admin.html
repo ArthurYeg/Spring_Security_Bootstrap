@@ -177,8 +177,8 @@
                                   style="text-align: center;" required>
                                 <div class="mb-3">
                                     <label for="username" class="form-label fw-bold">Username</label>
-                                    <input type="text" th:field="*{username}" class="form-control" id="first_name"
-                                           placeholder="First name" required>
+                                    <input type="text" th:field="*{username}" class="form-control" id="username"
+                                           placeholder="Username" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="age" class="form-label fw-bold">Age</label>
@@ -189,6 +189,7 @@
                                     <label for="email" class="form-label fw-bold">Email</label>
                                     <input type="email" th:field="*{email}" class="form-control" id="email"
                                            placeholder="Email" required>
+                                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-bold">Password</label>
