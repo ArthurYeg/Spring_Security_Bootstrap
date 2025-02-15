@@ -23,17 +23,17 @@ public class DataInitializer {
 
     @Transactional
     public void dataInitializer() {
-        Set<Role> roleAdmin = new HashSet<>();
-        Set<Role> roleUser = new HashSet<>();
-        roleAdmin.add(new Role("ROLE_ADMIN"));
-        roleUser.add(new Role("ROLE_USER"));
-        User admin = new User("admin", "admin_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "admin@mail.ru");
-        User user = new User("user", "user_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "user@mail.ru");
+        Set<Role> roleKata = new HashSet<>();
+        Set<Role> roleArthur = new HashSet<>();
+        roleKata.add(new Role("ROLE_ADMIN"));
+        roleArthur.add(new Role("ROLE_USER"));
+        User kata = new User("kata", "kata_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "kata@mail.ru");
+        User arthur = new User("arthur", "arthur_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "arthur@mail.ru");
 
-        admin.setRoles(roleAdmin);
-        user.setRoles(roleUser);
+        kata.setRoles(roleKata);
+        arthur.setRoles(roleArthur);
 
-        userRepository.save(user);
-        userRepository.save(admin);
+        userRepository.save(arthur);
+        userRepository.save(kata);
     }
 }
