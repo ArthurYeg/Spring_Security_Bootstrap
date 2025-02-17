@@ -32,6 +32,7 @@ public class User implements UserDetails {
 
     @NotEmpty(message = "Email cannot be empty")
     @Email(message = "Email must be valid")
+    @Column(unique = true)
     private String email;
 
     @NotEmpty(message = "Password cannot be empty")
