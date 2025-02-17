@@ -50,6 +50,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public boolean emailExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User  not found with ID: " + id));
+    }
 
     @Override
     public boolean createUser(@ModelAttribute User user) {
@@ -70,21 +75,29 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional
-    public boolean editUser(@ModelAttribute("user") User user) {
+    public boolean editUser (@ModelAttribute("user") User user) {
         return userRepository.findById(user.getId())
-                .map(editUser -> {
-                    editUser.setEmail(user.getEmail());
-                    editUser.setUsername(user.getUsername());
-                    editUser.setAge(user.getAge());
-                    if (user.getPassword() != null && !user.getPassword().isEmpty()){
-                        editUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                .map(existingUser  -> {
+                    existingUser .setUsername(user.getUsername());
+                    existingUser .setAge(user.getAge());
+
+                    // Обновляем email только если он изменился
+                    if (!existingUser .getEmail().equals(user.getEmail())) {
+                        existingUser .setEmail(user.getEmail());
                     }
-                    editUser.setRoles(user.getRoles());
-                    userRepository.save(editUser);
+
+                    // Обновление пароля, если он был введен
+                    if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                        existingUser .setPassword(passwordEncoder.encode(user.getPassword()));
+                    }
+
+                    existingUser .setRoles(user.getRoles());
+                    userRepository.save(existingUser );
                     return true;
                 })
                 .orElse(false);
     }
+
 
     @Override
     public boolean deleteUser(Long id) {

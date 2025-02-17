@@ -99,8 +99,7 @@
                                 type="button"
                                 role="tab"
                                 aria-controls="nav-profile"
-                                aria-selected="false"
-                        >
+                                aria-selected="false">
                             New User
                         </button>
                     </div>
@@ -162,12 +161,14 @@
                             </table>
                         </div>
                     </div>
+
+<!--                    >-------------------------------Add new user-------------------------->
+
                     <div
                             class="tab-pane fade"
                             id="nav-profile"
                             role="tabpanel"
-                            aria-labelledby="nav-profile-tab"
-                    >
+                            aria-labelledby="nav-profile-tab">
                         <div class="p-3 bg-light border">
                             <h5 class="card-header">Add new user</h5>
                         </div>
@@ -211,6 +212,8 @@
                 </div>
             </div>
         </div>
+
+
         <!-------------------------------------------  User Info -------------------------------------------------------->
         <div
                 class="tab-pane fade"
@@ -333,25 +336,29 @@
     const userEdit = document.getElementById('userEdit')
 
     userEdit.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget
-        const editId = button.getAttribute('data-bs-id')
-        userEdit.querySelector('.modal-body form').action = '/admin/admin/' + editId
-        userEdit.querySelector('.modal-body input[id="editId"]').value = button.getAttribute('data-bs-id')
-        userEdit.querySelector('.modal-body input[id="editUsername"]').value = button.getAttribute('data-bs-username')
-        userEdit.querySelector('.modal-body input[id="editAge"]').value = button.getAttribute('data-bs-age')
-        userEdit.querySelector('.modal-body input[id="editEmail"]').value = button.getAttribute('data-bs-email')
+        const button = event.relatedTarget;
+        const editId = button.getAttribute('data-bs-id');
+
+        // Устанавливаем правильный URL для редактирования
+        userEdit.querySelector('.modal-body form').action = '/admin/' + editId; // Убедитесь, что здесь правильный путь
+
+        userEdit.querySelector('.modal-body input[id="editId"]').value = editId;
+        userEdit.querySelector('.modal-body input[id="editUsername"]').value = button.getAttribute('data-bs-username');
+        userEdit.querySelector('.modal-body input[id="editAge"]').value = button.getAttribute('data-bs-age');
+        userEdit.querySelector('.modal-body input[id="editEmail"]').value = button.getAttribute('data-bs-email');
 
         const optionsRole = userEdit.querySelector('.modal-body select').getElementsByTagName('option');
-        let arrRoleId = button.getAttribute('data-bs-roles').matchAll(/id=\d+/g)
+        let arrRoleId = button.getAttribute('data-bs-roles').matchAll(/id=\d+/g);
         for (const strId of arrRoleId) {
-            let optId = strId.toString().slice(3)
+            let optId = strId.toString().slice(3);
             for (let i = 0; i < optionsRole.length; i++) {
                 if (optionsRole[i].value === optId) {
-                    optionsRole[i].selected = true
+                    optionsRole[i].selected = true;
                 }
             }
         }
-    })
+    });
+
 
     // Отчистка выбранных ролей после закрытия окна userEdit
     userEdit.addEventListener('hidden.bs.modal', event => {

@@ -33,4 +33,8 @@ public interface UserService extends UserDetailsService {
     Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
 
     boolean emailExists(String email);
+
+    User findById(Long id);
+
+
 }
