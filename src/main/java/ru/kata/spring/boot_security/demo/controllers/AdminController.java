@@ -54,19 +54,14 @@ public class AdminController {
     }
 
     @PutMapping("{id}")
-    public String editUser (@PathVariable Long id, @Valid @ModelAttribute("user") User user,
+    public String editUser (@PathVariable Long id, @ModelAttribute("user") User user,
                             BindingResult bindingResult, Model model) {
         User existingUser  = userService.findById(id);
-
-        if (!existingUser .getEmail().equals(user.getEmail())) {
-            if (userService.emailExists(user.getEmail())) {
-                bindingResult.rejectValue("email", "error.user", "Email already exists");
-            }
-        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allRoles", roleService.getRoleList());
             model.addAttribute("users", userService.getAllUsers());
+            model.addAttribute("newUser ", user);
             return "admin";
         }
 

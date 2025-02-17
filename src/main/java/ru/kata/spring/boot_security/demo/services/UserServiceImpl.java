@@ -75,27 +75,21 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional
-    public boolean editUser (@ModelAttribute("user") User user) {
+    public boolean editUser(@ModelAttribute("user") User user) {
         return userRepository.findById(user.getId())
-                .map(existingUser  -> {
-                    existingUser .setUsername(user.getUsername());
-                    existingUser .setAge(user.getAge());
-
-                    if (!existingUser .getEmail().equals(user.getEmail())) {
-                        existingUser .setEmail(user.getEmail());
+                .map(editUser -> {
+                    editUser.setEmail(user.getEmail());
+                    editUser.setUsername(user.getUsername());
+                    editUser.setAge(user.getAge());
+                    if (user.getPassword() != null && !user.getPassword().isEmpty()){
+                        editUser.setPassword(passwordEncoder.encode(user.getPassword()));
                     }
-
-                    if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                        existingUser .setPassword(passwordEncoder.encode(user.getPassword()));
-                    }
-
-                    existingUser .setRoles(user.getRoles());
-                    userRepository.save(existingUser );
+                    editUser.setRoles(user.getRoles());
+                    userRepository.save(editUser);
                     return true;
                 })
                 .orElse(false);
     }
-
 
     @Override
     public boolean deleteUser(Long id) {

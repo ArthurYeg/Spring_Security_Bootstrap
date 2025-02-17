@@ -35,6 +35,4 @@ public interface UserService extends UserDetailsService {
     boolean emailExists(String email);
 
     User findById(Long id);
-
-
 }

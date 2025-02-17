@@ -173,8 +173,7 @@
                             <h5 class="card-header">Add new user</h5>
                         </div>
                         <div class="d-flex justify-content-center border" style="padding-top: 15px;">
-                            <form th:method="POST" th:action="@{/admin}" th:object="${newUser}" class="col-md-3"
-                                  style="text-align: center;" required>
+                            <form th:method="POST" th:action="@{/admin}" th:object="${newUser}" class="col-md-3" style="text-align: center;" required>
                                 <div class="mb-3">
                                     <label for="username" class="form-label fw-bold">Username</label>
                                     <input type="text" th:field="*{username}" class="form-control" id="username"
