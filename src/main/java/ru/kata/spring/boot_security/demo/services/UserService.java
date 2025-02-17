@@ -14,8 +14,8 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+public interface UserService {
 
-public interface UserService extends UserDetailsService {
     User findByUsername(String username);
 
     List<User> getAllUsers();
@@ -31,8 +31,4 @@ public interface UserService extends UserDetailsService {
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
     Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
-
-    boolean emailExists(String email);
-
-    User findById(Long id);
 }

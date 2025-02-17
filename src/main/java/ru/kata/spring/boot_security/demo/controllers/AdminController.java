@@ -32,43 +32,28 @@ public class AdminController {
     }
 
     @GetMapping
-    public String usersListPage(Model model, Principal principal) {
-        model.addAttribute("newUser", new User());
+    public String usersListPage(Principal principal, Model model) {
+        model.addAttribute("user", userService.findByUsername(principal.getName()));
         model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("allRoles", roleService.getRoleList());
+        model.addAttribute("allRoles", roleService.findAll());
+        model.addAttribute("newUser", new User());
         return "admin";
     }
 
     @PostMapping()
-    public String createUser(@Valid @ModelAttribute("newUser") User user, BindingResult bindingResult, Model model) {
-        if (userService.emailExists(user.getEmail())) {
-            bindingResult.rejectValue("email", "error.user", "Email already exists");
+    public String createUser(@ModelAttribute User user) {
+        if (userService.createUser(user) == true) {
+            return "redirect:/admin";
+        } else {
+            return "redirect:/admin";
         }
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleService.getRoleList());
-            return "admin";
-        }
-        userService.createUser(user);
-        return "redirect:/admin";
-
     }
 
-    @PutMapping("{id}")
-    public String editUser (@PathVariable Long id, @ModelAttribute("user") User user,
-                            BindingResult bindingResult, Model model) {
-        User existingUser  = userService.findById(id);
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allRoles", roleService.getRoleList());
-            model.addAttribute("users", userService.getAllUsers());
-            model.addAttribute("newUser ", user);
-            return "admin";
-        }
-
-        userService.editUser (user);
+    @PutMapping("admin/{id}")
+    public String editUser(@ModelAttribute("user") User user) {
+        userService.editUser(user);
         return "redirect:/admin";
     }
-
 
     @DeleteMapping("admin/{id}")
     public String deleteUser(@PathVariable Long id) {

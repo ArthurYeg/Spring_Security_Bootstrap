@@ -27,8 +27,8 @@ public class DataInitializer {
         Set<Role> roleUser = new HashSet<>();
         roleAdmin.add(new Role("ROLE_ADMIN"));
         roleUser.add(new Role("ROLE_USER"));
-        User admin = new User("admin", "admin_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "admin@mail.ru");
-        User user= new User("user", "user_name", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "user@mail.ru");
+        User admin = new User("admin", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "admin@mail.ru");
+        User user= new User("user", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "user@mail.ru");
 
         admin.setRoles(roleAdmin);
         user.setRoles(roleUser);

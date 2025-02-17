@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -13,10 +12,8 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     @Column(name = "role_name")
     private String roleName;
-
     @Transient
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;

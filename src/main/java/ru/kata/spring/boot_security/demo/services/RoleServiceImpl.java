@@ -12,30 +12,19 @@ import java.util.List;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-   RoleRepository roleRepository;
-
+    RoleRepository roleRepository;
 
     public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
     @Override
-    public List<Role> getSetOfRoles(List<String> rolesId) {
-        return List.of();
-    }
-
-    @Override
-    public Role add(Role role){
+    public Role add(Role role) {
         return roleRepository.save(role);
     }
 
     @Override
-    public Role getRoleById(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<Role> getRoleList() {
+    public List<Role> findAll() {
         return roleRepository.findAll();
     }
 }

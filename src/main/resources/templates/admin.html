@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Admin panel</title>
+    <title>Bootstrap demo</title>
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
@@ -19,12 +19,13 @@
 </head>
 <body>
 <header
-        class="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between">
+        class="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between"
+>
     <div class="container-fluid">
-        <div class="nav-item text-left text-white px-3 navbar-brand">
-            <span class="navbar-brand fw-bold">User@mail.com</span>
+        <div th:each="user : ${user}" class="nav-item text-left text-white px-3 navbar-brand">
+            <span th:text="${user.email}" class="navbar-brand fw-bold">User@mail.com</span>
             <span class="navbar-brand">with roles:</span>
-            <span class="navbar-brand">Admin | User</span>
+            <span th:text="${user.getAllUserRoles()}" class="navbar-brand">User</span>
         </div>
         <div class="navbar-nav text-nowrap mr-3">
             <a href="/logout" class="nav-link px-3">logout</a>
@@ -99,7 +100,8 @@
                                 type="button"
                                 role="tab"
                                 aria-controls="nav-profile"
-                                aria-selected="false">
+                                aria-selected="false"
+                        >
                             New User
                         </button>
                     </div>
@@ -135,8 +137,7 @@
                                     <td th:text="${user.email}"></td>
                                     <td th:text="${user.getAllUserRoles()}"></td>
                                     <td>
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#userEdit"
+                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userEdit"
                                                 th:data-bs-id="${user.id}"
                                                 th:data-bs-username="${user.username}"
                                                 th:data-bs-age="${user.age}"
@@ -146,8 +147,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#userDelete"
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#userDelete"
                                                 th:data-bs-id="${user.id}"
                                                 th:data-bs-username="${user.username}"
                                                 th:data-bs-age="${user.age}"
@@ -161,19 +161,18 @@
                             </table>
                         </div>
                     </div>
-
-<!--                    >-------------------------------Add new user-------------------------->
-
                     <div
                             class="tab-pane fade"
                             id="nav-profile"
                             role="tabpanel"
-                            aria-labelledby="nav-profile-tab">
+                            aria-labelledby="nav-profile-tab"
+                    >
                         <div class="p-3 bg-light border">
                             <h5 class="card-header">Add new user</h5>
                         </div>
                         <div class="d-flex justify-content-center border" style="padding-top: 15px;">
-                            <form th:method="POST" th:action="@{/admin}" th:object="${newUser}" class="col-md-3" style="text-align: center;" required>
+                            <form th:method="POST" th:action="@{/admin}" th:object="${newUser}" class="col-md-3"
+                                  style="text-align: center;" required>
                                 <div class="mb-3">
                                     <label for="username" class="form-label fw-bold">Username</label>
                                     <input type="text" th:field="*{username}" class="form-control" id="username"
@@ -181,26 +180,19 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="age" class="form-label fw-bold">Age</label>
-                                    <input type="text" th:field="*{age}" class="form-control" id="age" placeholder="Age"
-                                           required>
+                                    <input type="text" th:field="*{age}" class="form-control" id="age" placeholder="Age" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="email" class="form-label fw-bold">Email</label>
-                                    <input type="email" th:field="*{email}" class="form-control" id="email"
-                                           placeholder="Email" required>
-                                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-                                         class="text-danger"></div>
+                                    <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Email" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label fw-bold">Password</label>
-                                    <input type="text" th:field="*{password}" class="form-control" id="password"
-                                           placeholder="Password" required>
+                                    <input type="text" th:field="*{password}" class="form-control" id="password" placeholder="Password" required>
                                 </div>
                                 <label for="roles" class="fw-bold">Role</label>
-                                <select class="form-select" id="roles" name="roles" multiple
-                                        th:size="${#sets.size(allRoles)}" required>
-                                    <option th:each="role: ${allRoles}" th:value="${role.id}"
-                                            th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                                <select class="form-select" id="roles" name="roles" multiple th:size="${#sets.size(allRoles)}" required>
+                                    <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                                 </select>
 
                                 <input class="btn btn-success" type="submit" value="Add new user"
@@ -211,8 +203,6 @@
                 </div>
             </div>
         </div>
-
-
         <!-------------------------------------------  User Info -------------------------------------------------------->
         <div
                 class="tab-pane fade"
@@ -266,8 +256,8 @@
                     <form id="editForm" th:method="put">
                         <label class="col-form-label mt-3 mb-0" for="editId"><strong>ID</strong></label>
                         <input class="form-control" id="editId" type="text" placeholder="ID" name="id" disabled>
-                        <label class="form-label mt-3 mb-0" for="editUsername"><strong>Username</strong></label>
-                        <input class="form-control" id="editUsername" type="text" name="username" required>
+                        <label class="form-label mt-3 mb-0" for="editUserName"><strong>Username</strong></label>
+                        <input class="form-control" id="editUserName" type="text" name="username" required>
                         <label class="form-label mt-3 mb-0" for="editAge"><strong>Age</strong></label>
                         <input class="form-control" id="editAge" type="number" name="age" required>
                         <label class="form-label mt-3 mb-0" for="editEmail"><strong>Email</strong></label>
@@ -275,10 +265,8 @@
                         <label class="form-label mt-3 mb-0" for="editPassword"><strong>Password</strong></label>
                         <input class="form-control" id="editPassword" type="password" name="password">
                         <label class="form-label mt-3 mb-0" for="editRoles"><strong>Role</strong></label>
-                        <select class="form-select" id="editRoles" name="roles" multiple
-                                th:size="${#sets.size(allRoles)}" required>
-                            <option th:each="role: ${allRoles}" th:value="${role.id}"
-                                    th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                        <select class="form-select" id="editRoles" name="roles" multiple th:size="${#sets.size(allRoles)}" required>
+                            <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                         </select>
                     </form>
                 </div>
@@ -307,17 +295,15 @@
                     <form id="deleteForm" th:method="delete">
                         <label class="col-form-label mt-3 mb-0" for="deleteId"><strong>ID</strong></label>
                         <input class="form-control" id="deleteId" type="text" placeholder="ID" name="id" disabled>
-                        <label class="form-label mt-3 mb-0" for="deleteUsername"><strong>Username</strong></label>
-                        <input class="form-control" id="deleteUsername" type="text" name="username" disabled>
+                        <label class="form-label mt-3 mb-0" for="deleteUserName"><strong>Username</strong></label>
+                        <input class="form-control" id="deleteUserName" type="text" name="username" disabled>
                         <label class="form-label mt-3 mb-0" for="deleteAge"><strong>Age</strong></label>
                         <input class="form-control" id="deleteAge" type="number" name="age" disabled>
                         <label class="form-label mt-3 mb-0" for="deleteEmail"><strong>Email</strong></label>
                         <input class="form-control" id="deleteEmail" type="email" name="email" disabled>
                         <label class="form-label mt-3 mb-0" for="deleteRoles"><strong>Role</strong></label>
-                        <select class="form-select" id="deleteRoles" name="roles" multiple
-                                th:size="${#sets.size(allRoles)}" disabled>
-                            <option th:each="role: ${allRoles}" th:value="${role.id}"
-                                    th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
+                        <select class="form-select" id="deleteRoles" name="roles" multiple th:size="${#sets.size(allRoles)}" disabled>
+                            <option th:each="role: ${allRoles}" th:value="${role.id}" th:text="${#strings.substringAfter(role.roleName, 'ROLE_')}"></option>
                         </select>
                     </form>
                 </div>
@@ -335,25 +321,27 @@
     const userEdit = document.getElementById('userEdit')
 
     userEdit.addEventListener('show.bs.modal', event => {
-        const button = event.relatedTarget;
-        const editId = button.getAttribute('data-bs-id');
-        userEdit.querySelector('.modal-body form').action = '/admin/' + editId;
-        userEdit.querySelector('.modal-body input[id="editId"]').value = editId;
-        userEdit.querySelector('.modal-body input[id="editUsername"]').value = button.getAttribute('data-bs-username');
-        userEdit.querySelector('.modal-body input[id="editAge"]').value = button.getAttribute('data-bs-age');
-        userEdit.querySelector('.modal-body input[id="editEmail"]').value = button.getAttribute('data-bs-email');
+        const button = event.relatedTarget
+        const editId = button.getAttribute('data-bs-id')
+        userEdit.querySelector('.modal-body form').action = '/admin/admin/' + editId
+        userEdit.querySelector('.modal-body input[id="editId"]').value = button.getAttribute('data-bs-id')
+        userEdit.querySelector('.modal-body input[id="editUserName"]').value = button.getAttribute('data-bs-username')
+        userEdit.querySelector('.modal-body input[id="editAge"]').value = button.getAttribute('data-bs-age')
+        userEdit.querySelector('.modal-body input[id="editEmail"]').value = button.getAttribute('data-bs-email')
+
         const optionsRole = userEdit.querySelector('.modal-body select').getElementsByTagName('option');
-        let arrRoleId = button.getAttribute('data-bs-roles').matchAll(/id=\d+/g);
+        let arrRoleId = button.getAttribute('data-bs-roles').matchAll(/id=\d+/g)
         for (const strId of arrRoleId) {
-            let optId = strId.toString().slice(3);
+            let optId = strId.toString().slice(3)
             for (let i = 0; i < optionsRole.length; i++) {
                 if (optionsRole[i].value === optId) {
-                    optionsRole[i].selected = true;
+                    optionsRole[i].selected = true
                 }
             }
         }
-    });
+    })
 
+    // Отчистка выбранных ролей после закрытия окна userEdit
     userEdit.addEventListener('hidden.bs.modal', event => {
         const optionsRole = userEdit.querySelector('.modal-body select').getElementsByTagName('option');
         for (let i = 0; i < optionsRole.length; i++) {
@@ -370,7 +358,7 @@
         const deleteId = button.getAttribute('data-bs-id')
         userDelete.querySelector('.modal-body form').action = '/admin/admin/' + deleteId
         userDelete.querySelector('.modal-body input[id="deleteId"]').value = button.getAttribute('data-bs-id')
-        userDelete.querySelector('.modal-body input[id="deleteUsername"]').value = button.getAttribute('data-bs-username')
+        userDelete.querySelector('.modal-body input[id="deleteUserName"]').value = button.getAttribute('data-bs-username')
         userDelete.querySelector('.modal-body input[id="deleteAge"]').value = button.getAttribute('data-bs-age')
         userDelete.querySelector('.modal-body input[id="deleteEmail"]').value = button.getAttribute('data-bs-email')
 
@@ -385,6 +373,8 @@
             }
         }
     })
+
+    // Отчистка выбранных ролей после закрытия окна userDelete
     userDelete.addEventListener('hidden.bs.modal', event => {
         const optionsRole = userDelete.querySelector('.modal-body select').getElementsByTagName('option');
         for (let i = 0; i < optionsRole.length; i++) {

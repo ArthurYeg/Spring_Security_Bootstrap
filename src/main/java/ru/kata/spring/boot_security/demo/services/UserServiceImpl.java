@@ -1,5 +1,5 @@
-package ru.kata.spring.boot_security.demo.services;
 
+package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
@@ -30,10 +31,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     @Lazy
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-
     }
 
     public User findByUsername(String email) {
@@ -44,16 +45,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users;
-    }
-
-    @Override
-    public boolean emailExists(String email) {
-        return userRepository.findByEmail(email) != null;
-    }
-    @Override
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User  not found with ID: " + id));
     }
 
     @Override
@@ -81,7 +72,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                     editUser.setEmail(user.getEmail());
                     editUser.setUsername(user.getUsername());
                     editUser.setAge(user.getAge());
-                    if (user.getPassword() != null && !user.getPassword().isEmpty()){
+                    if (user.getPassword() != null) {
                         editUser.setPassword(passwordEncoder.encode(user.getPassword()));
                     }
                     editUser.setRoles(user.getRoles());
