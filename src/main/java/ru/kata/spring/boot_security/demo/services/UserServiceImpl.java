@@ -81,12 +81,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                     existingUser .setUsername(user.getUsername());
                     existingUser .setAge(user.getAge());
 
-                    // Обновляем email только если он изменился
                     if (!existingUser .getEmail().equals(user.getEmail())) {
                         existingUser .setEmail(user.getEmail());
                     }
 
-                    // Обновление пароля, если он был введен
                     if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                         existingUser .setPassword(passwordEncoder.encode(user.getPassword()));
                     }
