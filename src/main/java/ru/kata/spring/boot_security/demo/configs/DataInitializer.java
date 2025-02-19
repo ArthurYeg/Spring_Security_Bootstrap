@@ -1,39 +1,48 @@
 package ru.kata.spring.boot_security.demo;
 
+import antlr.collections.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.services.RoleService;
+import ru.kata.spring.boot_security.demo.services.UserService;
 
 
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
 public class DataInitializer {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public DataInitializer(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public DataInitializer(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+
     }
 
-    @Transactional
-    public void dataInitializer() {
-        Set<Role> roleAdmin = new HashSet<>();
-        Set<Role> roleUser = new HashSet<>();
-        roleAdmin.add(new Role("ROLE_ADMIN"));
-        roleUser.add(new Role("ROLE_USER"));
-        User admin = new User("admin", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "admin@mail.ru");
-        User user= new User("user", (byte) 20, "$2a$12$boS3Oud9fYxdXMSA4SJcPu9nJUf0JRwP032PxmlR85bFrvM845rr2", "user@mail.ru");
+    @PostConstruct
+    private void DataInitializer() {
+        Role roleAdmin = new Role("ROLE_ADMIN");
+        Role roleUser = new Role("ROLE_USER");
 
-        admin.setRoles(roleAdmin);
-        user.setRoles(roleUser);
+        roleService.add(roleAdmin);
+        roleService.add(roleUser);
 
-        userRepository.save(user);
-        userRepository.save(admin);
+        User admin = new User("admin@mail.ru", "Nastya", "Krupskaya", 50, "111");
+        admin.addRole(roleAdmin);
+        userService.add(admin);
+
+        User user = new User("user@yandex.ru", "Sasha", "Belov", 45, "111");
+        user.addRole(roleUser);
+        userService.add(user);
     }
 }

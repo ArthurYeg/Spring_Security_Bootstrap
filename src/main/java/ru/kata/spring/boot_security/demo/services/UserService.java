@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,22 +14,19 @@ import ru.kata.spring.boot_security.demo.models.User;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 public interface UserService {
 
-    User findByUsername(String username);
 
-    List<User> getAllUsers();
+    User add(User user);
 
-    boolean createUser(@ModelAttribute User user);
+    boolean update(User user);
 
-    User getEditUserPage(@PathVariable Long id);
+    boolean removeById(Long id);
 
-    boolean editUser(@ModelAttribute("user") User user);
+    List<User> findAll();
 
-    boolean deleteUser(@PathVariable Long id);
-
-    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
-
-    Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles);
+    Optional<User> findById(Long id);
+    Optional<User> findUserAndFetchRoles(@Param("email") String email);
 }
