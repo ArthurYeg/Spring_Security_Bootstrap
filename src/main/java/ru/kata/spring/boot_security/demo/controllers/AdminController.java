@@ -52,7 +52,7 @@ public class AdminController {
         if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(user.getId())) {
             model.addAttribute("users", userService.findAll());
             model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("errorMessage", "Email уже используется!");
+            model.addAttribute("errorMessage", "Email is already used!");
             model.addAttribute("user", user);
             return "admin";
         }
@@ -77,13 +77,11 @@ public class AdminController {
         if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(id)) {
             model.addAttribute("users", userService.findAll());
             model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("errorMessage", "Email уже используется!");
+            model.addAttribute("errorMessage", "Email is already used!");
             model.addAttribute("user", user);
             return "admin";
         }
 
-
-        // Обновляем пароль только если он был передан
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             user.setPassword(user.getPassword());
         }
